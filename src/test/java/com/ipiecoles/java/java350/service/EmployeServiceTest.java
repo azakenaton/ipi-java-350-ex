@@ -9,17 +9,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeServiceTest {
@@ -43,15 +38,15 @@ public class EmployeServiceTest {
         Poste poste = Poste.TECHNICIEN;
         NiveauEtude niveauEtude = NiveauEtude.BTS_IUT;
         Double tempsPartiel = 1.0;
-        when(employeRepository.findLastMatricule()).thenReturn("00345");
-        when(employeRepository.findByMatricule("T00346")).thenReturn(null);
+        Mockito.when(employeRepository.findLastMatricule()).thenReturn("00345");
+        Mockito.when(employeRepository.findByMatricule("T00346")).thenReturn(null);
 
         //When
         employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
 
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(nom, employeArgumentCaptor.getValue().getNom());
         Assertions.assertEquals(prenom, employeArgumentCaptor.getValue().getPrenom());
         Assertions.assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")), employeArgumentCaptor.getValue().getDateEmbauche().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
@@ -70,15 +65,15 @@ public class EmployeServiceTest {
         Poste poste = Poste.MANAGER;
         NiveauEtude niveauEtude = NiveauEtude.MASTER;
         Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn("00345");
-        when(employeRepository.findByMatricule("M00346")).thenReturn(null);
+        Mockito.when(employeRepository.findLastMatricule()).thenReturn("00345");
+        Mockito.when(employeRepository.findByMatricule("M00346")).thenReturn(null);
 
         //When
         employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
 
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(nom, employeArgumentCaptor.getValue().getNom());
         Assertions.assertEquals(prenom, employeArgumentCaptor.getValue().getPrenom());
         Assertions.assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")), employeArgumentCaptor.getValue().getDateEmbauche().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
@@ -97,15 +92,15 @@ public class EmployeServiceTest {
         Poste poste = Poste.MANAGER;
         NiveauEtude niveauEtude = NiveauEtude.MASTER;
         Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn(null);
-        when(employeRepository.findByMatricule("M00001")).thenReturn(null);
+        Mockito.when(employeRepository.findLastMatricule()).thenReturn(null);
+        Mockito.when(employeRepository.findByMatricule("M00001")).thenReturn(null);
 
         //When
         employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
 
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals("M00001", employeArgumentCaptor.getValue().getMatricule());
     }
 
@@ -117,8 +112,8 @@ public class EmployeServiceTest {
         Poste poste = Poste.MANAGER;
         NiveauEtude niveauEtude = NiveauEtude.MASTER;
         Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn(null);
-        when(employeRepository.findByMatricule("M00001")).thenReturn(new Employe());
+        Mockito.when(employeRepository.findLastMatricule()).thenReturn(null);
+        Mockito.when(employeRepository.findByMatricule("M00001")).thenReturn(new Employe());
 
         //When/Then
         EntityExistsException e = Assertions.assertThrows(EntityExistsException.class, () -> employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel));
@@ -133,7 +128,7 @@ public class EmployeServiceTest {
         Poste poste = Poste.MANAGER;
         NiveauEtude niveauEtude = NiveauEtude.MASTER;
         Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn("99999");
+        Mockito.when(employeRepository.findLastMatricule()).thenReturn("99999");
 
         //When/Then
         EmployeException e = Assertions.assertThrows(EmployeException.class, () -> employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel));
@@ -194,7 +189,7 @@ public class EmployeServiceTest {
         String matricule = "C00001";
         Long caTraite = 20000L;
         Long objectifCa = 21000L;
-        when(employeRepository.findByMatricule(matricule)).thenReturn(null);
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(null);
         //When/Then
         EmployeException e = Assertions.assertThrows(EmployeException.class, () -> employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa));
         Assertions.assertEquals("Le matricule C00001 n'existe pas !", e.getMessage());
@@ -228,13 +223,13 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(50);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
-        when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(null);
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(null);
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(1,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
@@ -244,12 +239,12 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(50);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(2,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
@@ -259,13 +254,13 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(50);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
-        when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(3.0);
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(3.0);
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(1,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
@@ -275,13 +270,13 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(85);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
         //when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(null);
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(2,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
@@ -291,12 +286,12 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(110);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(3,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
@@ -306,12 +301,12 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(121);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(6,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
@@ -321,12 +316,12 @@ public class EmployeServiceTest {
         String matricule = "C12345";
         Long caTraite = Long.valueOf(100);
         Long objectifCa = Long.valueOf(100);
-        when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(new Employe());
         //When
         employeService.calculPerformanceCommercial(matricule,caTraite,objectifCa);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
         Assertions.assertEquals(2,  employeArgumentCaptor.getValue().getPerformance().intValue());
     }
 
